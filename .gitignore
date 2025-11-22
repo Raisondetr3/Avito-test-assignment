@@ -45,26 +45,9 @@ go.work.sum
 .vscode/
 *.code-workspace
 
-# Vim
-[._]*.s[a-v][a-z]
-[._]*.sw[a-p]
-[._]s[a-rt-v][a-z]
-[._]ss[a-gi-z]
-[._]sw[a-p]
-
-# macOS
+# OS
 .DS_Store
-.AppleDouble
-.LSOverride
 ._*
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Linux
-*~
 
 # Logs
 *.log
@@ -97,5 +80,4 @@ service
 pr-reviewer-service
 *.exe
 
-# Air (hot reload) temporary files
 tmp/
