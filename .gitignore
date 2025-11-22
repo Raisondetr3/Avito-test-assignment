@@ -75,9 +75,4 @@ config/secrets.yml
 *.jmx.log
 loadtest-results/
 
-# Build artifacts
-service
-pr-reviewer-service
-*.exe
-
 tmp/
