@@ -16,13 +16,18 @@ type PRRepository interface {
 	Exists(ctx context.Context, prID string) (bool, error)
 }
 
+type PRUserRepository interface {
+	GetByID(ctx context.Context, userID string) (*domain.User, error)
+	GetActiveByTeamExcluding(ctx context.Context, teamName, excludeUserID string) ([]*domain.User, error)
+}
+
 type PRService struct {
 	prRepo       PRRepository
-	userRepo     UserRepository
+	userRepo     PRUserRepository
 	reviewerAssg *ReviewerAssigner
 }
 
-func NewPRService(prRepo PRRepository, userRepo UserRepository, reviewerAssg *ReviewerAssigner) *PRService {
+func NewPRService(prRepo PRRepository, userRepo PRUserRepository, reviewerAssg *ReviewerAssigner) *PRService {
 	return &PRService{
 		prRepo:       prRepo,
 		userRepo:     userRepo,
