@@ -13,8 +13,8 @@ import (
 	"github.com/Raisondetr3/Avito-test-assignment/internal/config"
 	"github.com/Raisondetr3/Avito-test-assignment/internal/repository/postgres"
 	"github.com/Raisondetr3/Avito-test-assignment/internal/service"
-	"github.com/Raisondetr3/Avito-test-assignment/internal/transport/http/handlers"
 	httpTransport "github.com/Raisondetr3/Avito-test-assignment/internal/transport/http"
+	"github.com/Raisondetr3/Avito-test-assignment/internal/transport/http/handlers"
 )
 
 func main() {
