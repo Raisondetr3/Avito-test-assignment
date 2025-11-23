@@ -1,0 +1,19 @@
+services:
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: pr-reviewer-test-db
+    environment:
+      POSTGRES_DB: pr_reviewer_test
+      POSTGRES_USER: reviewer_user
+      POSTGRES_PASSWORD: reviewer_pass
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reviewer_user -d pr_reviewer_test"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+
+networks:
+  default:
+    name: pr-reviewer-test-network
