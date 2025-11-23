@@ -84,6 +84,28 @@ type GetReviewResponse struct {
 	PullRequests []*PullRequestShort `json:"pull_requests"`
 }
 
+type BulkDeactivateRequest struct {
+	TeamName string   `json:"team_name"`
+	UserIDs  []string `json:"user_ids,omitempty"`
+}
+
+type BulkDeactivateResponse struct {
+	DeactivatedUsers []string              `json:"deactivated_users"`
+	ReassignedPRs    []ReassignedPRInfo    `json:"reassigned_prs"`
+	SkippedPRs       []SkippedPRInfo       `json:"skipped_prs"`
+}
+
+type ReassignedPRInfo struct {
+	PullRequestID string `json:"pull_request_id"`
+	OldReviewerID string `json:"old_reviewer_id"`
+	NewReviewerID string `json:"new_reviewer_id"`
+}
+
+type SkippedPRInfo struct {
+	PullRequestID string `json:"pull_request_id"`
+	Reason        string `json:"reason"`
+}
+
 type ErrorResponse struct {
 	Error ErrorDetail `json:"error"`
 }

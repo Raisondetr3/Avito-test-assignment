@@ -421,6 +421,83 @@ paths:
                     author_id: u1
                     status: OPEN
 
+  /team/deactivateUsers:
+    post:
+      tags: [Teams]
+      summary: Массовая деактивация пользователей команды с безопасной переназначаемостью открытых PR
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [team_name]
+              properties:
+                team_name:
+                  type: string
+                  description: Название команды
+                user_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: Список ID пользователей для деактивации. Если не указан, деактивируются все пользователи команды
+            example:
+              team_name: backend
+              user_ids: [u1, u2, u3]
+      responses:
+        '200':
+          description: Пользователи деактивированы, PR переназначены
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [deactivated_users, reassigned_prs]
+                properties:
+                  deactivated_users:
+                    type: array
+                    items:
+                      type: string
+                    description: Список деактивированных пользователей
+                  reassigned_prs:
+                    type: array
+                    items:
+                      type: object
+                      required: [pull_request_id, old_reviewer_id, new_reviewer_id]
+                      properties:
+                        pull_request_id:
+                          type: string
+                        old_reviewer_id:
+                          type: string
+                        new_reviewer_id:
+                          type: string
+                    description: Список переназначенных PR
+                  skipped_prs:
+                    type: array
+                    items:
+                      type: object
+                      required: [pull_request_id, reason]
+                      properties:
+                        pull_request_id:
+                          type: string
+                        reason:
+                          type: string
+                    description: PR которые не удалось переназначить
+              example:
+                deactivated_users: [u1, u2]
+                reassigned_prs:
+                  - pull_request_id: pr-1001
+                    old_reviewer_id: u1
+                    new_reviewer_id: u3
+                  - pull_request_id: pr-1002
+                    old_reviewer_id: u2
+                    new_reviewer_id: u4
+                skipped_prs: []
+        '404':
+          description: Команда не найдена
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
   /stats:
     get:
       tags: [Statistics]

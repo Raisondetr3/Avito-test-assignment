@@ -12,6 +12,7 @@ func NewRouter(teamHandler *handlers.TeamHandler, userHandler *handlers.UserHand
 
 	r.HandleFunc("/team/add", teamHandler.CreateTeam).Methods(http.MethodPost)
 	r.HandleFunc("/team/get", teamHandler.GetTeam).Methods(http.MethodGet)
+	r.HandleFunc("/team/deactivateUsers", teamHandler.BulkDeactivateUsers).Methods(http.MethodPost)
 
 	r.HandleFunc("/users/setIsActive", userHandler.SetActive).Methods(http.MethodPost)
 	r.HandleFunc("/users/getReview", userHandler.GetReview).Methods(http.MethodGet)

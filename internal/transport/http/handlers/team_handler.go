@@ -10,12 +10,14 @@ import (
 )
 
 type TeamHandler struct {
-	teamService TeamService
+	teamService             TeamService
+	bulkDeactivationService BulkDeactivationService
 }
 
-func NewTeamHandler(teamService TeamService) *TeamHandler {
+func NewTeamHandler(teamService TeamService, bulkDeactivationService BulkDeactivationService) *TeamHandler {
 	return &TeamHandler{
-		teamService: teamService,
+		teamService:             teamService,
+		bulkDeactivationService: bulkDeactivationService,
 	}
 }
 
@@ -60,6 +62,56 @@ func (h *TeamHandler) GetTeam(w http.ResponseWriter, r *http.Request) {
 
 	response := mapTeamToDTO(team)
 	middleware.WriteJSON(w, http.StatusOK, response)
+}
+
+func (h *TeamHandler) BulkDeactivateUsers(w http.ResponseWriter, r *http.Request) {
+	var req dto.BulkDeactivateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		middleware.WriteJSONError(w, http.StatusBadRequest, "INVALID_REQUEST", "Invalid request body")
+		return
+	}
+
+	if req.TeamName == "" {
+		middleware.WriteJSONError(w, http.StatusBadRequest, "INVALID_REQUEST", "team_name is required")
+		return
+	}
+
+	result, err := h.bulkDeactivationService.DeactivateUsersAndReassignPRs(r.Context(), req.TeamName, req.UserIDs)
+	if err != nil {
+		middleware.WriteError(w, err)
+		return
+	}
+
+	response := dto.BulkDeactivateResponse{
+		DeactivatedUsers: result.DeactivatedUsers,
+		ReassignedPRs:    mapReassignedPRsToDTO(result.ReassignedPRs),
+		SkippedPRs:       mapSkippedPRsToDTO(result.SkippedPRs),
+	}
+
+	middleware.WriteJSON(w, http.StatusOK, response)
+}
+
+func mapReassignedPRsToDTO(prs []domain.ReassignedPR) []dto.ReassignedPRInfo {
+	result := make([]dto.ReassignedPRInfo, 0, len(prs))
+	for _, pr := range prs {
+		result = append(result, dto.ReassignedPRInfo{
+			PullRequestID: pr.PullRequestID,
+			OldReviewerID: pr.OldReviewerID,
+			NewReviewerID: pr.NewReviewerID,
+		})
+	}
+	return result
+}
+
+func mapSkippedPRsToDTO(prs []domain.SkippedPR) []dto.SkippedPRInfo {
+	result := make([]dto.SkippedPRInfo, 0, len(prs))
+	for _, pr := range prs {
+		result = append(result, dto.SkippedPRInfo{
+			PullRequestID: pr.PullRequestID,
+			Reason:        pr.Reason,
+		})
+	}
+	return result
 }
 
 func mapTeamToDTO(team *domain.Team) *dto.Team {

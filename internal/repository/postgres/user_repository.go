@@ -209,3 +209,63 @@ func (r *UserRepository) Exists(ctx context.Context, userID string) (bool, error
 
 	return exists, nil
 }
+
+func (r *UserRepository) BulkDeactivate(ctx context.Context, userIDs []string) error {
+	if len(userIDs) == 0 {
+		return nil
+	}
+
+	query := `
+		UPDATE users
+		SET is_active = false, updated_at = CURRENT_TIMESTAMP
+		WHERE user_id = ANY($1)
+	`
+
+	_, err := r.db.ExecContext(ctx, query, userIDs)
+	if err != nil {
+		return fmt.Errorf("failed to bulk deactivate users: %w", err)
+	}
+
+	return nil
+}
+
+func (r *UserRepository) GetUsersByIDs(ctx context.Context, userIDs []string) ([]*domain.User, error) {
+	if len(userIDs) == 0 {
+		return []*domain.User{}, nil
+	}
+
+	query := `
+		SELECT user_id, username, team_name, is_active, created_at, updated_at
+		FROM users
+		WHERE user_id = ANY($1)
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, userIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get users by IDs: %w", err)
+	}
+	defer rows.Close()
+
+	users := make([]*domain.User, 0)
+	for rows.Next() {
+		user := &domain.User{}
+		err := rows.Scan(
+			&user.UserID,
+			&user.Username,
+			&user.TeamName,
+			&user.IsActive,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan user: %w", err)
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating users: %w", err)
+	}
+
+	return users, nil
+}

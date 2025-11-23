@@ -10,6 +10,9 @@ type UserRepository interface {
 	GetByID(ctx context.Context, userID string) (*domain.User, error)
 	SetActive(ctx context.Context, userID string, isActive bool) error
 	GetActiveByTeamExcluding(ctx context.Context, teamName, excludeUserID string) ([]*domain.User, error)
+	GetByTeam(ctx context.Context, teamName string) ([]*domain.User, error)
+	GetUsersByIDs(ctx context.Context, userIDs []string) ([]*domain.User, error)
+	BulkDeactivate(ctx context.Context, userIDs []string) error
 }
 
 type UserService struct {

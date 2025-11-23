@@ -224,3 +224,46 @@ func (r *PRRepository) Exists(ctx context.Context, prID string) (bool, error) {
 
 	return exists, nil
 }
+
+type PRReviewerInfo struct {
+	PullRequestID string
+	ReviewerID    string
+	ReviewerTeam  string
+}
+
+func (r *PRRepository) GetOpenPRsWithReviewers(ctx context.Context, reviewerIDs []string) ([]PRReviewerInfo, error) {
+	if len(reviewerIDs) == 0 {
+		return []PRReviewerInfo{}, nil
+	}
+
+	query := `
+		SELECT pr.pull_request_id, prr.reviewer_id, u.team_name
+		FROM pull_requests pr
+		INNER JOIN pr_reviewers prr ON pr.pull_request_id = prr.pull_request_id
+		INNER JOIN users u ON prr.reviewer_id = u.user_id
+		WHERE pr.status = 'OPEN' AND prr.reviewer_id = ANY($1)
+		ORDER BY pr.created_at
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, reviewerIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get open PRs with reviewers: %w", err)
+	}
+	defer rows.Close()
+
+	infos := make([]PRReviewerInfo, 0)
+	for rows.Next() {
+		var info PRReviewerInfo
+		err := rows.Scan(&info.PullRequestID, &info.ReviewerID, &info.ReviewerTeam)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan PR reviewer info: %w", err)
+		}
+		infos = append(infos, info)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating PR reviewer infos: %w", err)
+	}
+
+	return infos, nil
+}

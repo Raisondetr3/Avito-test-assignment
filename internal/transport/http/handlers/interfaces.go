@@ -27,3 +27,7 @@ type PRService interface {
 type StatsService interface {
 	GetStatistics(ctx context.Context) (*domain.Statistics, error)
 }
+
+type BulkDeactivationService interface {
+	DeactivateUsersAndReassignPRs(ctx context.Context, teamName string, userIDs []string) (*domain.BulkDeactivationResult, error)
+}
