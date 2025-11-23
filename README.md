@@ -37,12 +37,11 @@ API описан в `openapi.yml`
 
 **Результаты:**
 - P50 latency: 7.92 ms
-- P95 latency: 18.53 ms (цель: <300 ms) ✓
+- P95 latency: 18.53 ms (цель: <300 ms)
 - P99 latency: 45.38 ms
-- Success rate: 99.33% (цель: >99.9%) ✓
-- Bulk deactivation: 6-8 ms (цель: <100 ms) ✓
+- Success rate: 99.33% (цель: >99.9%)
+- Bulk deactivation: 6-8 ms (цель: <100 ms)
 
-Подробные результаты в `LOAD_TESTING.md`
 
 ## Дополнительные возможности
 
@@ -51,7 +50,7 @@ API описан в `openapi.yml`
 - ✓ Нагрузочное тестирование
 - ✓ Массовая деактивация пользователей (`POST /team/deactivateUsers`)
 - ✓ Интеграционное тестирование
-- ✓ Конфигурация линтера (см. `LINTER.md`)
+- ✓ Конфигурация линтера
 
 ## Стек
 
