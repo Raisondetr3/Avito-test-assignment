@@ -44,18 +44,21 @@ func run() error {
 	userRepo := postgres.NewUserRepository(db)
 	teamRepo := postgres.NewTeamRepository(db)
 	prRepo := postgres.NewPRRepository(db)
+	statsRepo := postgres.NewStatsRepository(db)
 
 	reviewerAssigner := service.NewReviewerAssigner()
 
 	userService := service.NewUserService(userRepo)
 	teamService := service.NewTeamService(teamRepo)
 	prService := service.NewPRService(prRepo, userRepo, reviewerAssigner)
+	statsService := service.NewStatsService(statsRepo)
 
 	teamHandler := handlers.NewTeamHandler(teamService)
 	userHandler := handlers.NewUserHandler(userService, prService)
 	prHandler := handlers.NewPRHandler(prService)
+	statsHandler := handlers.NewStatsHandler(statsService)
 
-	router := httpTransport.NewRouter(teamHandler, userHandler, prHandler)
+	router := httpTransport.NewRouter(teamHandler, userHandler, prHandler, statsHandler)
 
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),

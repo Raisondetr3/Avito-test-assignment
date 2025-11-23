@@ -23,3 +23,7 @@ type PRService interface {
 	GetPRsByReviewer(ctx context.Context, reviewerID string) ([]*domain.PullRequest, error)
 	GetByID(ctx context.Context, prID string) (*domain.PullRequest, error)
 }
+
+type StatsService interface {
+	GetStatistics(ctx context.Context) (*domain.Statistics, error)
+}

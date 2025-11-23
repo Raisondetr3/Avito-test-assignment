@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewRouter(teamHandler *handlers.TeamHandler, userHandler *handlers.UserHandler, prHandler *handlers.PRHandler) *mux.Router {
+func NewRouter(teamHandler *handlers.TeamHandler, userHandler *handlers.UserHandler, prHandler *handlers.PRHandler, statsHandler *handlers.StatsHandler) *mux.Router {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/team/add", teamHandler.CreateTeam).Methods(http.MethodPost)
@@ -19,6 +19,8 @@ func NewRouter(teamHandler *handlers.TeamHandler, userHandler *handlers.UserHand
 	r.HandleFunc("/pullRequest/create", prHandler.CreatePR).Methods(http.MethodPost)
 	r.HandleFunc("/pullRequest/merge", prHandler.MergePR).Methods(http.MethodPost)
 	r.HandleFunc("/pullRequest/reassign", prHandler.ReassignPR).Methods(http.MethodPost)
+
+	r.HandleFunc("/stats", statsHandler.GetStatistics).Methods(http.MethodGet)
 
 	r.HandleFunc("/health", healthCheck).Methods(http.MethodGet)
 

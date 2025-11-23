@@ -7,6 +7,7 @@ tags:
   - name: Teams
   - name: Users
   - name: PullRequests
+  - name: Statistics
   - name: Health
 
 components:
@@ -419,3 +420,85 @@ paths:
                     pull_request_name: Add search
                     author_id: u1
                     status: OPEN
+
+  /stats:
+    get:
+      tags: [Statistics]
+      summary: Получить статистику по системе
+      responses:
+        '200':
+          description: Статистика системы
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [pull_requests, users, teams, top_reviewers]
+                properties:
+                  pull_requests:
+                    type: object
+                    required: [total, open, merged]
+                    properties:
+                      total:
+                        type: integer
+                        description: Общее количество PR
+                      open:
+                        type: integer
+                        description: Количество открытых PR
+                      merged:
+                        type: integer
+                        description: Количество смерженных PR
+                  users:
+                    type: object
+                    required: [total, active, inactive]
+                    properties:
+                      total:
+                        type: integer
+                        description: Общее количество пользователей
+                      active:
+                        type: integer
+                        description: Количество активных пользователей
+                      inactive:
+                        type: integer
+                        description: Количество неактивных пользователей
+                  teams:
+                    type: object
+                    required: [total]
+                    properties:
+                      total:
+                        type: integer
+                        description: Общее количество команд
+                  top_reviewers:
+                    type: array
+                    description: Топ ревьюверов по количеству назначений
+                    items:
+                      type: object
+                      required: [user_id, username, review_count]
+                      properties:
+                        user_id:
+                          type: string
+                        username:
+                          type: string
+                        review_count:
+                          type: integer
+                          description: Количество PR, где пользователь назначен ревьювером
+              example:
+                pull_requests:
+                  total: 150
+                  open: 45
+                  merged: 105
+                users:
+                  total: 50
+                  active: 42
+                  inactive: 8
+                teams:
+                  total: 5
+                top_reviewers:
+                  - user_id: u5
+                    username: Alice
+                    review_count: 87
+                  - user_id: u12
+                    username: Bob
+                    review_count: 76
+                  - user_id: u3
+                    username: Charlie
+                    review_count: 68
