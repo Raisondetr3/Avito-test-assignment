@@ -151,15 +151,14 @@ func (r *PRRepository) Update(ctx context.Context, pr *domain.PullRequest) error
 }
 
 func (r *PRRepository) ReplaceReviewer(ctx context.Context, prID, oldReviewerID, newReviewerID string) error {
-	query := `
-		UPDATE pr_reviewers
-		SET reviewer_id = $3, assigned_at = CURRENT_TIMESTAMP
+	deleteQuery := `
+		DELETE FROM pr_reviewers
 		WHERE pull_request_id = $1 AND reviewer_id = $2
 	`
 
-	result, err := r.db.ExecContext(ctx, query, prID, oldReviewerID, newReviewerID)
+	result, err := r.db.ExecContext(ctx, deleteQuery, prID, oldReviewerID)
 	if err != nil {
-		return fmt.Errorf("failed to replace reviewer: %w", err)
+		return fmt.Errorf("failed to delete old reviewer: %w", err)
 	}
 
 	rows, err := result.RowsAffected()
@@ -169,6 +168,16 @@ func (r *PRRepository) ReplaceReviewer(ctx context.Context, prID, oldReviewerID,
 
 	if rows == 0 {
 		return errors.ErrNotAssigned(oldReviewerID, prID)
+	}
+
+	insertQuery := `
+		INSERT INTO pr_reviewers (pull_request_id, reviewer_id, assigned_at)
+		VALUES ($1, $2, CURRENT_TIMESTAMP)
+	`
+
+	_, err = r.db.ExecContext(ctx, insertQuery, prID, newReviewerID)
+	if err != nil {
+		return fmt.Errorf("failed to insert new reviewer: %w", err)
 	}
 
 	return nil
