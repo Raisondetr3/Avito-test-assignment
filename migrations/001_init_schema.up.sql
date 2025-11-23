@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS teams (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_teams_created_at ON teams(created_at);
+CREATE INDEX IF NOT EXISTS idx_teams_created_at ON teams(created_at);
 
 CREATE TABLE IF NOT EXISTS users (
     user_id VARCHAR(255) PRIMARY KEY,
@@ -17,10 +17,10 @@ CREATE TABLE IF NOT EXISTS users (
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_users_team_name ON users(team_name);
-CREATE INDEX idx_users_is_active ON users(is_active);
-CREATE INDEX idx_users_team_active ON users(team_name, is_active) WHERE is_active = true;
-CREATE UNIQUE INDEX idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_team_name ON users(team_name);
+CREATE INDEX IF NOT EXISTS idx_users_is_active ON users(is_active);
+CREATE INDEX IF NOT EXISTS idx_users_team_active ON users(team_name, is_active) WHERE is_active = true;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username);
 
 CREATE TABLE IF NOT EXISTS pull_requests (
     pull_request_id VARCHAR(255) PRIMARY KEY,
@@ -36,9 +36,9 @@ CREATE TABLE IF NOT EXISTS pull_requests (
     CONSTRAINT chk_pr_status CHECK (status IN ('OPEN', 'MERGED'))
 );
 
-CREATE INDEX idx_pr_author ON pull_requests(author_id);
-CREATE INDEX idx_pr_status ON pull_requests(status);
-CREATE INDEX idx_pr_created_at ON pull_requests(created_at);
+CREATE INDEX IF NOT EXISTS idx_pr_author ON pull_requests(author_id);
+CREATE INDEX IF NOT EXISTS idx_pr_status ON pull_requests(status);
+CREATE INDEX IF NOT EXISTS idx_pr_created_at ON pull_requests(created_at);
 
 CREATE TABLE IF NOT EXISTS pr_reviewers (
     pull_request_id VARCHAR(255) NOT NULL,
@@ -53,8 +53,8 @@ CREATE TABLE IF NOT EXISTS pr_reviewers (
         ON DELETE RESTRICT
 );
 
-CREATE INDEX idx_pr_reviewers_reviewer ON pr_reviewers(reviewer_id);
-CREATE INDEX idx_pr_reviewers_assigned_at ON pr_reviewers(assigned_at);
+CREATE INDEX IF NOT EXISTS idx_pr_reviewers_reviewer ON pr_reviewers(reviewer_id);
+CREATE INDEX IF NOT EXISTS idx_pr_reviewers_assigned_at ON pr_reviewers(assigned_at);
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -64,9 +64,11 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_pull_requests_updated_at ON pull_requests;
 CREATE TRIGGER update_pull_requests_updated_at BEFORE UPDATE ON pull_requests
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
