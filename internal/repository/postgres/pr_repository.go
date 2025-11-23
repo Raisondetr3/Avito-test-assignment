@@ -176,7 +176,7 @@ func (r *PRRepository) ReplaceReviewer(ctx context.Context, prID, oldReviewerID,
 
 func (r *PRRepository) GetByReviewer(ctx context.Context, reviewerID string) ([]*domain.PullRequest, error) {
 	query := `
-		SELECT DISTINCT pr.pull_request_id, pr.pull_request_name, pr.author_id, pr.status
+		SELECT DISTINCT pr.pull_request_id, pr.pull_request_name, pr.author_id, pr.status, pr.created_at
 		FROM pull_requests pr
 		INNER JOIN pr_reviewers prr ON pr.pull_request_id = prr.pull_request_id
 		WHERE prr.reviewer_id = $1
@@ -192,11 +192,13 @@ func (r *PRRepository) GetByReviewer(ctx context.Context, reviewerID string) ([]
 	prs := make([]*domain.PullRequest, 0)
 	for rows.Next() {
 		pr := &domain.PullRequest{}
+		var createdAt any
 		err := rows.Scan(
 			&pr.PullRequestID,
 			&pr.PullRequestName,
 			&pr.AuthorID,
 			&pr.Status,
+			&createdAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan pull request: %w", err)
