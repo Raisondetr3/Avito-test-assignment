@@ -52,8 +52,9 @@ func run() error {
 	teamService := service.NewTeamService(teamRepo)
 	prService := service.NewPRService(prRepo, userRepo, reviewerAssigner)
 	statsService := service.NewStatsService(statsRepo)
+	bulkDeactivationService := service.NewBulkDeactivationService(userRepo, teamRepo, prRepo, reviewerAssigner)
 
-	teamHandler := handlers.NewTeamHandler(teamService)
+	teamHandler := handlers.NewTeamHandler(teamService, bulkDeactivationService)
 	userHandler := handlers.NewUserHandler(userService, prService)
 	prHandler := handlers.NewPRHandler(prService)
 	statsHandler := handlers.NewStatsHandler(statsService)
