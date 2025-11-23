@@ -90,7 +90,7 @@ func run() error {
 		defer cancel()
 
 		if err := server.Shutdown(ctx); err != nil {
-			server.Close()
+			_ = server.Close()
 			return fmt.Errorf("graceful shutdown failed: %w", err)
 		}
 

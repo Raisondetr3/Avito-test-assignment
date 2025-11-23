@@ -90,9 +90,9 @@ type BulkDeactivateRequest struct {
 }
 
 type BulkDeactivateResponse struct {
-	DeactivatedUsers []string              `json:"deactivated_users"`
-	ReassignedPRs    []ReassignedPRInfo    `json:"reassigned_prs"`
-	SkippedPRs       []SkippedPRInfo       `json:"skipped_prs"`
+	DeactivatedUsers []string           `json:"deactivated_users"`
+	ReassignedPRs    []ReassignedPRInfo `json:"reassigned_prs"`
+	SkippedPRs       []SkippedPRInfo    `json:"skipped_prs"`
 }
 
 type ReassignedPRInfo struct {

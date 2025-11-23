@@ -18,7 +18,7 @@ func (ra *ReviewerAssigner) SelectReviewers(candidates []*domain.User, maxCount 
 		return []string{}
 	}
 
-	count := min(maxCount, len(candidates))
+	count := minInt(maxCount, len(candidates))
 
 	selected := make([]string, 0, count)
 	indices := rand.Perm(len(candidates))
@@ -39,7 +39,7 @@ func (ra *ReviewerAssigner) SelectRandomReviewer(candidates []*domain.User) (str
 	return candidates[idx].UserID, true
 }
 
-func min(a, b int) int {
+func minInt(a, b int) int {
 	if a < b {
 		return a
 	}

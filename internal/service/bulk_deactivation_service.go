@@ -9,10 +9,10 @@ import (
 )
 
 type BulkDeactivationService struct {
-	userRepo            UserRepository
-	teamRepo            TeamRepository
-	prRepo              PRRepository
-	reviewerAssigner    *ReviewerAssigner
+	userRepo         UserRepository
+	teamRepo         TeamRepository
+	prRepo           PRRepository
+	reviewerAssigner *ReviewerAssigner
 }
 
 func NewBulkDeactivationService(
@@ -29,6 +29,7 @@ func NewBulkDeactivationService(
 	}
 }
 
+//nolint:gocyclo
 func (s *BulkDeactivationService) DeactivateUsersAndReassignPRs(
 	ctx context.Context,
 	teamName string,
@@ -69,7 +70,7 @@ func (s *BulkDeactivationService) DeactivateUsersAndReassignPRs(
 		}, nil
 	}
 
-	openPRsInfo, err := s.prRepo.(*postgres.PRRepository).GetOpenPRsWithReviewers(ctx, usersToDeactivate)
+	openPRsInfo, err := s.prRepo.(*postgres.PRRepository).GetOpenPRsWithReviewers(ctx, usersToDeactivate) //nolint:errcheck
 	if err != nil {
 		return nil, fmt.Errorf("failed to get open PRs: %w", err)
 	}

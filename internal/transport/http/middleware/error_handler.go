@@ -30,7 +30,7 @@ func WriteJSONError(w http.ResponseWriter, statusCode int, code, message string)
 		},
 	}
 
-	json.NewEncoder(w).Encode(response)
+	_ = json.NewEncoder(w).Encode(response) //nolint:errcheck
 }
 
 func getStatusCode(code errors.ErrorCode) int {
@@ -55,5 +55,5 @@ func getStatusCode(code errors.ErrorCode) int {
 func WriteJSON(w http.ResponseWriter, statusCode int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(data)
+	_ = json.NewEncoder(w).Encode(data) //nolint:errcheck
 }

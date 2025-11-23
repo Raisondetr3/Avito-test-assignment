@@ -22,7 +22,7 @@ func (r *PRRepository) Create(ctx context.Context, pr *domain.PullRequest) error
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer tx.Rollback() //nolint:errcheck
 
 	prQuery := `
 		INSERT INTO pull_requests (pull_request_id, pull_request_name, author_id, status, created_at, updated_at)

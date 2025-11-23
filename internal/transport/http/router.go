@@ -3,8 +3,9 @@ package http
 import (
 	"net/http"
 
-	"github.com/Raisondetr3/Avito-test-assignment/internal/transport/http/handlers"
 	"github.com/gorilla/mux"
+
+	"github.com/Raisondetr3/Avito-test-assignment/internal/transport/http/handlers"
 )
 
 func NewRouter(teamHandler *handlers.TeamHandler, userHandler *handlers.UserHandler, prHandler *handlers.PRHandler, statsHandler *handlers.StatsHandler) *mux.Router {
@@ -30,5 +31,5 @@ func NewRouter(teamHandler *handlers.TeamHandler, userHandler *handlers.UserHand
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	_, _ = w.Write([]byte("OK")) //nolint:errcheck
 }

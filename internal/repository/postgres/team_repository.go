@@ -22,7 +22,7 @@ func (r *TeamRepository) Create(ctx context.Context, team *domain.Team) error {
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer tx.Rollback() //nolint:errcheck
 
 	teamQuery := `
 		INSERT INTO teams (team_name, created_at)

@@ -33,9 +33,9 @@ type Stats struct {
 }
 
 const (
-	baseURL     = "http://localhost:8080"
-	targetRPS   = 5
-	testDuration = 60 * time.Second
+	baseURL         = "http://localhost:8080"
+	targetRPS       = 5
+	testDuration    = 60 * time.Second
 	sliResponseTime = 300 * time.Millisecond
 	sliSuccessRate  = 99.9
 )

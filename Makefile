@@ -1,4 +1,4 @@
-.PHONY: build up down integration-test clean
+.PHONY: build up down integration-test lint lint-fix clean
 
 build:
 	go build -o bin/service ./cmd/service
@@ -18,6 +18,12 @@ integration-test:
 		TEST_RESULT=$$?; \
 		docker-compose -f docker-compose.test.yml down -v; \
 		exit $$TEST_RESULT
+
+lint:
+	golangci-lint run
+
+lint-fix:
+	golangci-lint run --fix
 
 clean:
 	rm -rf bin/

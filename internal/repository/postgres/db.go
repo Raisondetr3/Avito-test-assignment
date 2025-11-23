@@ -32,7 +32,7 @@ func NewDB(dsn string) (*DB, error) {
 func (db *DB) RunMigrations(migrationsPath string) error {
 	sqlFile := filepath.Join(migrationsPath, "001_init_schema.up.sql")
 
-	content, err := os.ReadFile(sqlFile)
+	content, err := os.ReadFile(sqlFile) //nolint:gosec
 	if err != nil {
 		return fmt.Errorf("failed to read migration file: %w", err)
 	}
